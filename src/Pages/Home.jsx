@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import ActorGrid from '../Components/Actors/ActorGrid';
 import MainPageLayout from '../Components/MainPageLayout';
+import ShowsGrid from '../Components/Shows/ShowsGrid';
 import { getApi } from '../getApi';
 
 const Home = () => {
@@ -7,7 +9,7 @@ const Home = () => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [searchOption, setSearchOption] = useState('shows');
-  const isShowsSearch = (searchOption === 'shows');
+  const isShowsSearch = searchOption === 'shows';
 
   // handling change in input textarea
   const handleOnChange = e => {
@@ -27,10 +29,10 @@ const Home = () => {
     }
   };
 
-  const handleSearchOptions = (ev)=>{
-      setSearchOption(ev.target.value);
-      console.log(ev.target.value);
-  }
+  const handleSearchOptions = ev => {
+    setSearchOption(ev.target.value);
+    // console.log(ev.target.value);
+  };
 
   const renderResults = () => {
     if (result && result.length === 0) {
@@ -39,12 +41,11 @@ const Home = () => {
     if (result && result.length > 0) {
       return (
         <div>
-          {result[0].show? result.map(item => {
-            return <div key={item.show.id}>{item.show.name}</div>;
-            }):  result.map(item => {
-            return <div key={item.person.id}>{item.person.name}</div>;
-            })
-          }
+          {result[0].show ? (
+            <ShowsGrid data={result} />
+          ) : (
+            <ActorGrid data={result} />
+          )}
         </div>
       );
     }
@@ -58,17 +59,29 @@ const Home = () => {
       <br />
       <label htmlFor="searchOptions">
         Shows
-        <input checked={isShowsSearch} type="radio" id="showSearch" value="shows" onChange={handleSearchOptions} />
+        <input
+          checked={isShowsSearch}
+          type="radio"
+          id="showSearch"
+          value="shows"
+          onChange={handleSearchOptions}
+        />
       </label>
       <label htmlFor="searchOptions">
-          Actors
-        <input checked={!isShowsSearch} type="radio" id="showSearch" value="people" onChange={handleSearchOptions} />
+        Actors
+        <input
+          checked={!isShowsSearch}
+          type="radio"
+          id="showSearch"
+          value="people"
+          onChange={handleSearchOptions}
+        />
       </label>
       <input
         type="text"
         onChange={handleOnChange}
         onKeyDown={handleKeyDown}
-        placeholder='Search for something'
+        placeholder="Search for something"
         value={input}
       />
       <button type="submit" onClick={handleSearch}>
