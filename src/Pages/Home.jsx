@@ -6,6 +6,8 @@ const Home = () => {
   // state variable for input
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
+  const [searchOption, setSearchOption] = useState('shows');
+  const isShowsSearch = (searchOption === 'shows');
 
   // handling change in input textarea
   const handleOnChange = e => {
@@ -15,7 +17,7 @@ const Home = () => {
   // Function to handle search
   const handleSearch = () => {
     // https://api.tvmaze.com/search/shows?q=girls
-    getApi(`/search/shows?q=${input}`).then(data=> setResult(data))
+    getApi(`/search/${searchOption}?q=${input}`).then(data => setResult(data));
   };
 
   // Function to search when enter key is pressed
@@ -25,34 +27,54 @@ const Home = () => {
     }
   };
 
-  const renderResults = ()=>{
-      if(result && result.length===0){
-          return <div>No Results</div>;
-      }
-      if(result && result.length>0){
-          return (<div>{result.map((item) =>{
-              return <div key={item.show.id}>{item.show.name}</div>
-          })}
-          </div>);
-      }
-
-      return null;
+  const handleSearchOptions = (ev)=>{
+      setSearchOption(ev.target.value);
+      console.log(ev.target.value);
   }
+
+  const renderResults = () => {
+    if (result && result.length === 0) {
+      return <div>No Results</div>;
+    }
+    if (result && result.length > 0) {
+      return (
+        <div>
+          {result[0].show? result.map(item => {
+            return <div key={item.show.id}>{item.show.name}</div>;
+            }):  result.map(item => {
+            return <div key={item.person.id}>{item.person.name}</div>;
+            })
+          }
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <MainPageLayout>
       This is Home
+      <br />
+      <label htmlFor="searchOptions">
+        Shows
+        <input checked={isShowsSearch} type="radio" id="showSearch" value="shows" onChange={handleSearchOptions} />
+      </label>
+      <label htmlFor="searchOptions">
+          Actors
+        <input checked={!isShowsSearch} type="radio" id="showSearch" value="people" onChange={handleSearchOptions} />
+      </label>
       <input
         type="text"
         onChange={handleOnChange}
         onKeyDown={handleKeyDown}
+        placeholder='Search for something'
         value={input}
       />
       <button type="submit" onClick={handleSearch}>
         Search
       </button>
-        {renderResults()}
-
+      {renderResults()}
     </MainPageLayout>
   );
 };
